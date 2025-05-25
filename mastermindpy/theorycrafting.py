@@ -12,11 +12,9 @@ def alldigitsdifferent(number):
     return True
 def howmanynumbers(start):
     i = 0
-    while start != 9876:
-        i += 1
+    while start <= 9876:
+        if alldigitsdifferent(start): i += 1
         start += 1
-        while not alldigitsdifferent(start) and start < 9876:
-            start += 1
     return i
 
 print(howmanynumbers(1023))

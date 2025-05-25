@@ -1,13 +1,20 @@
+#libraries
 from random import randint
+
+#global variables:
+prevrounds_user = dict() #k = int : v = (int,(int,int))
+prevrounds_computer = dict() #k = int: v = (int,int) different than prevrounds_user
+
+#classes
 
 class InputError(Exception):
     def __init__(self, message="too many failed entries"):
         self.message = message
         super().__init__(self.message)
 
+#functions
 
-
-def inttolistint(number):
+def inttolistint(number: int):
     listret = []
     while number != 0:
         listret.append(number % 10)
@@ -32,7 +39,7 @@ def random4digitgen():
         max -= 1
     return numret
 
-def alldigitsdifferent(number):
+def alldigitsdifferent(number: int):
     if number // 1000 == 0 or number // 10000 != 0:
         return False
     verifset = set()
@@ -66,7 +73,7 @@ def userentry():
         raise InputError("too many failed entries")
     return user_input
 
-def guess(i1,i2):
+def guess_eval(i1,i2):
     contains = 0
     samedigit = 0
     li1 = inttolistint(i1)
@@ -85,7 +92,14 @@ def guess(i1,i2):
             contains -= 1
     return (contains,samedigit)
 
-def worst_case(number):
+def worst_guess(input):
+    guess = random4digitgen()
+    while guess in prevrounds_computer:
+        guess = worst_case(guess)
+    return guess
+    
+
+def worst_case():
     number += 1
     while not alldigitsdifferent(number) and number < 9876:
         number += 1
@@ -93,51 +107,18 @@ def worst_case(number):
         return 1023
     return number
 
-def guessadd(tu):
+def guess_eval_add(tu):
     (minus,plus) = tu
     return plus - minus
-""""
-def algorithmp1(potent,prevres):
-    if 1234 not in prevres:
-        return 1234
-    if prevres[1234] == (0,0):
-        potent -= set(inttolistint(1234))
-    if 5678 not in prevres:
-        return 5678
-    if prevres[5678] == (0,0):
-        potent -= set(inttolistint(5678))
-    if guessadd(prevres[1234]) + guessadd(prevres[5678]) == 4:
-        potent -= {0,9}
-    
-    lpotent = list(potent)
-    lpotent.sort()
-    digit = 1000
-    max = len(lpotent)
-    if 0 in potent:
-        lpotno0 = lpotent.copy()
-        lpotno0.remove(0)
-        maxalt = max - 1
-        numret +=  * digit
-        digit //= 10
-    while digit != 0:
-        digit //= 10
-        
-        numret +=  * digit
-        lpotent.pop(randno)
-        max -= 1
-    if numret not in prevres:
-        return numret
-    else:
-"""     
-def randomgame():
+
+
+def game(func):
     print("choose your number: ")
     usernumber = userentry()
     computernumber = random4digitgen()
     gi = 0
-    prevrounds_user = dict() #k = int : v = (int,(int,int))
-    prevrounds_computer = dict() #k = int: v = (int,int) different than prevrounds_user
-    while True:
-        while True:
+    while True: #game itself
+        while True: #player decision
             print("what are you going to do? (1: next round, 2: see the result of the previous rounds,3: quit game)")
             try:
                 decision = int(input())
@@ -150,7 +131,7 @@ def randomgame():
         if decision == 1:
             gi += 1
             print("make a guess: ")
-            while True:
+            while True: 
                 u_entry = userentry()
                 i = 0
                 for k,v in prevrounds_user.items():
@@ -160,16 +141,14 @@ def randomgame():
                         i += 1
                 if i == len(prevrounds_user):
                     break
-            gtup = guess(u_entry,computernumber)
+            gtup = guess_eval(u_entry,computernumber)
             print(gtup)
             tuapp = (u_entry,gtup)
             prevrounds_user[gi] = tuapp
             print("computer's turn")
             print("your number is " + str(usernumber))
-            comguess = random4digitgen()
-            while comguess in prevrounds_user:
-                comguess = worst_case(comguess)
-            cgtup = guess(comguess,usernumber)
+            comguess = func() # <- first-order variable
+            cgtup = guess_eval(comguess,usernumber)
             print("computer's guess is "+ str(comguess))
             print(cgtup)
             prevrounds_computer[comguess] = cgtup
@@ -219,6 +198,4 @@ def randomgame():
             break
     print("computer's number was "+str(computernumber))
 
-
-randomgame()
-
+    return 0
