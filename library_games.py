@@ -1,7 +1,6 @@
 #libraries
 from random import randint,choice
-from theorycrafting import *
-
+from theorycrafting import listtoint,reverse_difference
 #global variables:
 prevrounds_user = dict() #k = int : v = (int,(int,int))
 prevrounds_computer = dict() #k = int: v = (int,(int,int))
@@ -101,9 +100,8 @@ def worst_guess(prevrounds):
     return guess
 
 def worst_guess_test(all,prevrounds):
-    guess = random4digitgen()
-    while guess in prevrounds:
-        guess = worst_case()
+    guess = choice(list(all))
+    all.discard(guess)
     return guess
     
 
@@ -142,17 +140,14 @@ def elimination_guess(prevrounds):
 
 def elimination_guess_test(all,prevrounds):
     #elimination
-    val = 0
     to_remove = set()
-    for k in prevrounds:
-        if val < k:
-            val = k
-    if val > 0:
+    if prevrounds:
+        val = max(prevrounds)
         (n,tu) = prevrounds[val]
         for num in all:
             if guess_eval(num,n) != tu:
                 to_remove.add(num)
-    all.difference_update(to_remove)
+    reverse_difference(all,to_remove)
     #guess
     guess = choice(list(all))
     all.remove(guess)
@@ -248,7 +243,7 @@ def player_game(func):
     print("computer's number was "+str(computernumber))
 
 
-def computer_vs_computer(func1,func2,print_the_results):
+def computer_vs_computer(func1,func2):
     c1n = random4digitgen()
     c2n = random4digitgen()
     prevrounds_computer1 = dict() #k = int: v = (int,(int,int))
@@ -264,31 +259,30 @@ def computer_vs_computer(func1,func2,print_the_results):
         prevrounds_computer1[r] = (c1_guess,cg1_tup)
         prevrounds_computer2[r] = (c2_guess,cg2_tup)
         if cg1_tup == (0,4) and cg2_tup != (0,4):
-            if print_the_results:
-                print("the first function won")
+            print("the first function won")
             f1won = True
             break
         if cg2_tup == (0,4):
-            if print_the_results:
-                print("the second function won")
+            print("the second function won")
             f2won = True
             break
         if cg1_tup == (0,4) and cg2_tup == (0,4):
-            if print_the_results:
-                print("it's a draw")
+            print("it's a draw")
             f1won = f2won = True
             break
-    if print_the_results:
-        print("after " + str(r) + " rounds")
+    print("after " + str(r) + " rounds")
     return (r,f1won,f2won)
 
-def computer_vs_computer_test(func1,func2,print_the_results):
+def computer_vs_computer_test(func1,func2,print_the_details):
     prevrounds_computer1 = dict() #k = int: v = (int,(int,int))
     prevrounds_computer2 = dict() #k = int: v = (int,(int,int)) 
-    all_no1 = {listtoint([i,j,k,m]) for i in range(1,10) for j in range(10) for k in range(10) for m in range(10) if i != j and i != k and i != m and j != k and j != m and k != m}
-    all_no2 = {listtoint([i,j,k,m]) for i in range(1,10) for j in range(10) for k in range(10) for m in range(10) if i != j and i != k and i != m and j != k and j != m and k != m}
+    all_no1 = all_numbers.copy()
+    all_no2 = all_numbers.copy()
     c1n = random4digitgen()
     c2n = random4digitgen()
+    if print_the_details:
+        print("f1's hidden number " + str(c1n))
+        print("f2's hidden number " + str(c2n))
     r = 0
     f1won = f2won = False
     while True:
@@ -297,24 +291,28 @@ def computer_vs_computer_test(func1,func2,print_the_results):
         cg1_tup = guess_eval(c1_guess,c2n)
         c2_guess = func2(all_no2,prevrounds_computer2)
         cg2_tup = guess_eval(c2_guess,c1n)
+        if print_the_details:
+            print("round " + str(r))
+            print("f1's guess " + str(c1_guess) + " " + str(cg1_tup))
+            print("f2's guess " + str(c2_guess) + " " + str(cg2_tup))
         prevrounds_computer1[r] = (c1_guess,cg1_tup)
         prevrounds_computer2[r] = (c2_guess,cg2_tup)
         if cg1_tup == (0,4) and cg2_tup != (0,4):
-            if print_the_results:
+            if print_the_details:
                 print("the first function won")
             f1won = True
             break
         if cg2_tup == (0,4) and cg1_tup != (0,4) :
-            if print_the_results:
+            if print_the_details:
                 print("the second function won")
             f2won = True
             break
         if cg1_tup == (0,4) and cg2_tup == (0,4):
-            if print_the_results:
+            if print_the_details:
                 print("it's a draw")
             f1won = f2won = True
             break
-    if print_the_results:
+    if print_the_details:
         print("after " + str(r) + " rounds")
     return (r,f1won,f2won)
 

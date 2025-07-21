@@ -13,7 +13,7 @@ def mean(l):
         con += i
     if le == 0:
         return 0 #undefined for 0 but kept as 0 for practical reasons
-    return round(con/le,2)
+    return round(con/le,2) 
                  
 def standard_deviation(l):
     n = len(l)
