@@ -1,5 +1,7 @@
 from library_games import *
-import math
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 class GameError(Exception):
     def __init__(self):
@@ -24,7 +26,7 @@ def standard_deviation(l):
     for i in l:
         ximinu = i - meanl
         conret += ximinu ** 2
-    return round(math.sqrt(conret / (n-1)),2)
+    return round(np.sqrt(conret / (n-1)),2)
 
 def exceptional_results(l):
     lsomewhat = []
@@ -36,9 +38,9 @@ def exceptional_results(l):
         diff = abs(meanl - i)
         if diff >= stdevl and diff < 2 * stdevl:
             lsomewhat.append(i)
-        if diff >= 2 * stdevl and diff < 3 * stdevl:
+        elif diff >= 2 * stdevl and diff < 3 * stdevl:
             lconsiderably.append(i)
-        if diff >= 3 * stdevl:
+        elif diff >= 3 * stdevl:
             ltruly.append(i)
     return (lsomewhat,lconsiderably,ltruly)
 
@@ -59,7 +61,7 @@ def func_analysis(n, fun1, fun2):
             raise GameError()
     return (lisf1,lisf2,draws)
 
-def stats_analysis(n,fun1,fun2,avg,st_dev,exceptional_values):
+def stats_analysis(n,fun1,fun2,avg = False,st_dev = False,exceptional_values = False,plots = False):
     (l1,l2,draws) = func_analysis(n,fun1,fun2)
     fun1name = fun1.__name__
     fun2name = fun2.__name__
@@ -91,6 +93,15 @@ def stats_analysis(n,fun1,fun2,avg,st_dev,exceptional_values):
     print(prgame1)
     print(prgame2)
     print(prdraw)
+    (_,axe) = plt.subplots(1,3,figsize=(18,4))
+    axe[0].hist(l1)
+    axe[1].hist(l2)
+    axe[2].hist(draws)
+    if plots:
+        plt.tight_layout()
+        plt.show()
+
+
         
 
                 
